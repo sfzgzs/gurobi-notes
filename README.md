@@ -1,9 +1,9 @@
 # gurobi-notes
-## Notes from Dr. Joel Sokol's [course](https://www.gurobi.com/resources/intro-to-optimization-through-the-lens-of-data-science/) in patnership with Gurobi 
+## Notes from Dr. Joel Sokol's course [Introduction to Optimization Through the Lens of Data Science](https://www.gurobi.com/resources/intro-to-optimization-through-the-lens-of-data-science/) in partnership with Gurobi 
 
 Optimization is the mathematical methodology that takes the information output from data science models and uses it to suggest the best decisions and actions to take.
 Sometimes optimization by itself answers questions, and sometimes it sits on top of data science questions.
-Gurobi is not a good software to build models; we automate model building through Python, etc., and then solve the model through Gurobi.
+Gurobi is not a good software for building models; instead, we automate the model-building process through Python/C++/etc., and then solve the model using Gurobi.
 This course is about building optimization models.
 
 The mathematical optimization model typically doesn't change with new data since it's typically modeling a decision process, and is not a data-fitting process.
