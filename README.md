@@ -92,16 +92,16 @@ Unless indicated otherwise, Gurobi assumes
   - variable to a power other than zero or one (possibly not even an integer, e.g., $x^{1.5}$), and
   - Trigonometric functions of a variable.
 ### Use data files, not hard-coded data.
-OBVIOUSLY! re-usability reasons.
+OBVIOUSLY! Re-usability reasons.
 
 ## How do optimization algorithms work anyway?
 Main Steps:
 1. Initialization
 2. Iteration: Find an improving direction, and move towards it by a step.
 3. Stop when:
-  - the solution doesn't change much
-  - time runs out
-  - the solution is optimal or close enough to the optimal one
+     1. the solution doesn't change much
+     2. time runs out
+     3. the solution is optimal or close enough to the optimal one
 
 This gives us a guarantee to get the optimal solution if the problem is convex.
 
