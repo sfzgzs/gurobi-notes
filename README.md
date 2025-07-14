@@ -22,7 +22,7 @@ We need to separate data from the model.
 ## Classic Optimization Problems
 - (Stigler's) [diet problem](https://en.wikipedia.org/wiki/Stigler_diet)
 - Call center scheduling: meet forecasted demand for each day, each worker should get 2 days off after 5 days of working.
-  - Be creative with variables. We can model it using X_i: the number of workers who start working on day i
+  - Be creative with variables. We can model it using $X_i$: the number of workers who start working on day $i$
 - Using different setups of data, we can easily analyze sensitivity and what-if scenarios.
 
 ## Types of Optimization Models based on Objective Functions
@@ -51,7 +51,7 @@ We can use expressions built up from variables, squared variables, or bilinear v
 We can also use 
 - division,
 - three variables multiplied,
-- variable to a power other than zero or one (possibly not even an integer, e.g., x^{1.5}),
+- variable to a power other than zero or one (possibly not even an integer, e.g., $x^{1.5}$),
 - Trigonometric functions of a variable.
 These could be modeled using the expressions above and hence are acceptable.
 But would be better avoided, since they slow down the solution time.
@@ -89,16 +89,16 @@ Unless indicated otherwise, Gurobi assumes
 - Expressions built up from the following are better avoided, since they slow down the solution time:
   - division of variables,
   - three variables multiplied,
-  - variable to a power other than zero or one (possibly not even an integer, e.g., x^{1.5}), and
+  - variable to a power other than zero or one (possibly not even an integer, e.g., $x^{1.5}$), and
   - Trigonometric functions of a variable.
 ### Use data files, not hard-coded data.
 OBVIOUSLY! re-usability reasons.
 
 ## How do optimization algorithms work anyway?
 Main Steps:
-1 - Initialization
-2 - Iteration: Find an improving direction, and move towards it by a step.
-3 - Stop when:
+1. Initialization
+2. Iteration: Find an improving direction, and move towards it by a step.
+3. Stop when:
   - the solution doesn't change much
   - time runs out
   - the solution is optimal or close enough to the optimal one
