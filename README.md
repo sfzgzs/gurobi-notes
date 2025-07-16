@@ -107,3 +107,4 @@ This gives us a guarantee to get the optimal solution if the problem is convex.
 
 ## More Resources
 [Gurobi C++ API Documentations](https://docs.gurobi.com/projects/optimizer/en/current/reference/cpp.html)
+[A project or two](https://github.com/sfzgzs/gurobi-notes/tree/main/makeup-supply-chain-project) by me.
