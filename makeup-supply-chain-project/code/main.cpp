@@ -3,6 +3,7 @@
 #include "utils.h"
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 
 void solveCarrierAssignment(std::vector<SKU> &skuList)
 {
@@ -74,7 +75,7 @@ void solveCarrierAssignment(std::vector<SKU> &skuList)
                costA += skuList[i].carrierAShippingCost * xA[i];
                costB += skuList[i].carrierBShippingCost * xB[i];
                costC += skuList[i].carrierCShippingCost * xC[i];
-               allProductsManufacturingCosts += xA[i] * skuList[i].manufacturingCost * skuList[i].orderQuantities + xB[i] * skuList[i].manufacturingCost * skuList[i].orderQuantities + xC[i] * skuList[i].manufacturingCost * skuList[i].orderQuantities;
+               allProductsManufacturingCosts += skuList[i].manufacturingCost * (xA[i] + xB[i] + xC[i]) * skuList[i].orderQuantities;
           }
 
           // Objective: minimize total cost after discount
@@ -84,10 +85,11 @@ void solveCarrierAssignment(std::vector<SKU> &skuList)
 
           // Optimize
           model.optimize();
-
+          double totalRevenue = 0;
           // After optimization, assign carriers and print result
           for (int i = 0; i < n; ++i)
           {
+               totalRevenue += skuList[i].price * (xA[i].get(GRB_DoubleAttr_X) + xB[i].get(GRB_DoubleAttr_X) + xC[i].get(GRB_DoubleAttr_X)) * skuList[i].orderQuantities;
                if (xA[i].get(GRB_DoubleAttr_X) != 0)
                     std::cout << "SKU " << i << ", Carrier A:"
                               << " with cost " << skuList[i].carrierAShippingCost
@@ -102,7 +104,7 @@ void solveCarrierAssignment(std::vector<SKU> &skuList)
                               << "ships " << xC[i].get(GRB_DoubleAttr_X) << "\n";
                std::cout << "\n ---- \n";
           }
-          std::cout << "Total cost: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
+          std::cout << std::fixed << std::fixed << std::setprecision(2) << "Total cost of shipping and manufacturing: " << model.get(GRB_DoubleAttr_ObjVal) << ", Total Revenue:" << totalRevenue << " Total Profit: " << (totalRevenue - model.get(GRB_DoubleAttr_ObjVal)) << std::endl;
      }
      catch (GRBException e)
      {
