@@ -7,7 +7,7 @@ GUROBI_HOME = /opt/gurobi1202/linux64
 LIBS = $(GUROBI_HOME)/lib/libgurobi_c++.a -L$(GUROBI_HOME)/lib -lgurobi120 -lpthread -lm
 
 # Source files and output binary
-SOURCES = main.cpp SKU.cpp utils.cpp
+SOURCES = main.cpp SKU.cpp utils.cpp optimization.cpp
 OUTPUT = main
 
 .PHONY: all clean run
