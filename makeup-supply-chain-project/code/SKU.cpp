@@ -1,4 +1,5 @@
 #include "SKU.h"
+#include "utils.h"
 #include <sstream>
 
 std::string SKU::toString() const

@@ -4,7 +4,39 @@
 #include <cmath>
 #include <random>
 
-std::vector<SKU> readSkuList(std::ifstream &file)
+void initializeCarrierShippingCosts(std::vector<SKU> &skuList)
+{
+    for (auto &sku : skuList)
+    {
+        bool randBool = getRandomInt(0, 1) == 0;
+        if (sku.shippingCarrier == "Carrier A")
+        {
+            sku.carrierAShippingCost = sku.shippingCost;
+            sku.carrierBShippingCost = round2(sku.shippingCost + (randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost));
+            sku.carrierCShippingCost = round2(sku.shippingCost + (!randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost));
+        }
+        else if (sku.shippingCarrier == "Carrier B")
+        {
+            sku.carrierBShippingCost = sku.shippingCost;
+            sku.carrierAShippingCost = round2(sku.shippingCost + (randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost));
+            sku.carrierCShippingCost = round2(sku.shippingCost + (!randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost));
+        }
+        else if (sku.shippingCarrier == "Carrier C")
+        {
+            sku.carrierCShippingCost = sku.shippingCost;
+            sku.carrierAShippingCost = round2(sku.shippingCost + (randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost));
+            sku.carrierBShippingCost = round2(sku.shippingCost + (!randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost));
+        }
+        else
+        {
+            // Default behavior if carrier unknown
+            sku.carrierAShippingCost = sku.shippingCost;
+            sku.carrierBShippingCost = sku.shippingCost + (randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost);
+            sku.carrierCShippingCost = sku.shippingCost + (!randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost);
+        }
+    }
+}
+std::vector<SKU> readSkuList(std::ifstream &file, bool containsSupplierLeadTime)
 {
     if (!file.is_open())
         throw std::runtime_error("Could not open the file!");
@@ -24,7 +56,7 @@ std::vector<SKU> readSkuList(std::ifstream &file)
         std::getline(ss, token, ',');
         skuObj.price = std::stod(token);
         std::getline(ss, token, ',');
-        skuObj.availability = std::stod(token);
+        skuObj.availability = std::stoi(token);
         std::getline(ss, token, ',');
         skuObj.numberSold = std::stoi(token);
         std::getline(ss, token, ',');
@@ -33,17 +65,18 @@ std::vector<SKU> readSkuList(std::ifstream &file)
         std::getline(ss, token, ',');
         skuObj.stockLevels = std::stoi(token);
         std::getline(ss, token, ',');
-        skuObj.leadTimes = std::stod(token);
+        skuObj.leadTimes = std::stoi(token);
         std::getline(ss, token, ',');
         skuObj.orderQuantities = std::stoi(token);
         std::getline(ss, token, ',');
-        skuObj.shippingTimes = std::stod(token);
+        skuObj.shippingTimes = std::stoi(token);
         std::getline(ss, skuObj.shippingCarrier, ',');
         std::getline(ss, token, ',');
         skuObj.shippingCost = std::stod(token);
         std::getline(ss, skuObj.supplierName, ',');
         std::getline(ss, skuObj.supplierLocation, ',');
-        std::getline(ss, token, ',');
+        if (containsSupplierLeadTime)
+            std::getline(ss, token, ',');
         // skuObj.supplierLeadTime = std::stod(token);
         std::getline(ss, token, ',');
         skuObj.productionVolumes = std::stoi(token);
@@ -60,6 +93,7 @@ std::vector<SKU> readSkuList(std::ifstream &file)
     }
 
     file.close();
+    initializeCarrierShippingCosts(res);
     return res;
 }
 
@@ -161,6 +195,6 @@ void writeCleanedCSV(const std::vector<SKU> &data, const std::string &filename)
     }
     catch (...)
     {
-        throw std::runtime_error("Could save the cleaned file!");
+        throw std::runtime_error("Could not save the cleaned file!");
     }
 }

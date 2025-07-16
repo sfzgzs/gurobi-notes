@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 struct SKU
 {
@@ -12,6 +13,7 @@ struct SKU
     std::string customerDemographics;
     int stockLevels;
     double leadTimes;
+    // When shipping, how many products of this fits in one shipping package
     int orderQuantities;
     double shippingTimes;
     std::string shippingCarrier;
@@ -26,6 +28,12 @@ struct SKU
     double defectRates;
     std::string transportationMode;
     std::string route;
+
+    // Modification for shipping problem
+    double carrierAShippingCost;
+    double carrierBShippingCost;
+    double carrierCShippingCost;
+
     std::string toString() const;
     std::string commaSeparatedToString() const;
 };
