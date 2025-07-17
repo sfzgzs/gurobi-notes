@@ -24,7 +24,7 @@ The primary key in the table provided is SKU (Stock Keeping Unit). For each prod
 | Supplier Location | Cities: **Mumbai, Kolkata, Delhi, Bangalore, Chennai** |
 | Production Volume | ? |
 | Manufacturing lead time | Time from sales order created to production finished (ready for delivery) (I presume in this scenario, since the products are all transported to the store, it's the time the supplier takes after the sales order is created in their system?...) |
-| Manufacturing costs | Same as above? I'm assuming it's how much costs for the makeup store the buys this product from a supplier? |
+| Manufacturing costs | Same as above(Cost per unit charged by the supplier to the makeup store)? I'm assuming it's how much costs for the makeup store the buys this product from a supplier? |
 | Inspection results | I'm assuming this is about the specific supplier's products? |
 | Defect rates | Same as above? |
 | Transportation modes | one of **Air, Road, Sea, and Rail** |
@@ -43,7 +43,7 @@ The primary key in the table provided is SKU (Stock Keeping Unit). For each prod
       where the typical **markup percentage** for mass-market beauty products is a ratio between [1,3].
 - The field **revenue generated** is not equal to **price**$\times$**number of products sold**. This can easily be fixed.
 - Excessively high **defect rates** are reported. Typical industry defect rates are <1%. Easy fix.
-- **Manufacturing lead times** range from 1 to 30 days, with no correlation to the supplier. (I did not change this)
+- **Manufacturing lead times** range from 1 to 30 days, with no correlation to the supplier. This is assumed to reflect the supplier’s internal production time.
 - In realistic supply chain timelines, **manufacturing lead time for cosmetics** is typically between 3–15 days and **shipping lead time** is 2–7 days for domestic shipments, and 7–30 days for international shipments.
   - Could be fixed using ranged random generation.
 - There are two fields with "lead time" header...
@@ -55,12 +55,12 @@ The primary key in the table provided is SKU (Stock Keeping Unit). For each prod
 ---
 ## Problem 1 Statement
 In this dataset, we have one carrier(out of A, B, and C) selected for each product. 
-Now, let us consider a situation where **all carriers offer identical services** for each SKU (exact same routes, modes, and lead times), but with **different shipping costs** (randomized by ±0.05 of the base cost).  
+Now, let us consider a situation where **all carriers offer identical services** for each SKU (exact same routes, modes, and lead times), but with **different shipping costs** (randomly added or subtracted 0.5 of the base cost).  
 
 Now, the reason the store would not immediately choose the carrier with the minimum cost of shipping for each product is that bulk discounts apply when total shipped packages exceed a certain threshold for each carrier:
-- **Carrier A**: 25% off beyond **2500 packages**
-- **Carrier B**: 30% off beyond **2600 packages**
-- **Carrier C**: 20% off beyond **2400 packages**
+- **Carrier A**: 25% off beyond **100 packages**
+- **Carrier B**: 30% off beyond **150 packages**
+- **Carrier C**: 20% off beyond **50 packages**
 
 Our goal is to assign carriers to each SKU **to minimize total cost**, considering both:
 - The **shipping cost** (with discounts applied when thresholds are met)  
@@ -79,10 +79,11 @@ We model this problem as a **Mixed-Integer Quadratic Program (MIQP)** using **Gu
     for each SKU: total number of packages shipped to store $\geq$ (number of products sold - stock levels) / order quantities 
 
   - **Discount Activation**: Implemented via **indicator constraints** (using Gurobi's `addGenConstrIndicator`):  
-    e.g., *if total packages of Carrier A ≥ 2500 → activate discount *  
+    e.g., *if total packages of Carrier A ≥ 100 → activate discount *  
 
 - **Objective**:  
-  Minimize: Total Shipping Cost (with discounts) + Total Manufacturing Cost
+  Minimize:  Total Shipping Cost (after applying discounts at the carrier level) + Total Manufacturing Cost
+(Holding and ordering costs are not considered in Problem 1.)
 ---
 ## Problem 2 Statement
 Let us consider a more realistic scenario where two more factors are considered in calculating the number of products ordered in total:
@@ -91,7 +92,8 @@ Let us consider a more realistic scenario where two more factors are considered 
       - Storage cost,
       - Insurance, and
       - Depreciation/Obsolescence
-    A practical rule of thumb is to consider 20% to 30% of the product ``acquisition''(manufacturing+shipping) cost per year. In order to model this, we just use a random number between 20% and 30% of the cost of the product.
+    A practical rule of thumb is to consider 20% to 30% of the product ``acquisition''(manufacturing+shipping) cost per year.
+In our model, we randomly assign a holding cost percentage within this range to each SKU.
 2. Ordering Cost (per order)
    may include:
      - Administrative costs (time spent by staff placing the order)
@@ -100,7 +102,13 @@ Let us consider a more realistic scenario where two more factors are considered 
      - Customs/brokerage fees (for international orders)
      - Setup costs at the warehouse or store (handling incoming stock, inspection)
    This could be a flat dollar amount per order (no matter how many items in the order). In our code, we consider it to be a flat amount randomly selected between $30-$50 for each **supplier**.
+- Additionally, if an order is split across multiple carriers, we add a flat split shipment penalty (ORDERING_COST_FOR_MORE_THAN_ONE_SHIPPING) per SKU.
+  This is modeled via binary variables activated when more than one carrier is used for the same SKU.
 
-## Problem 3 Statement
-Add a flat cost to OrderingCost when the supplier is asked to ship the order using more than one carrier.
+## Summary of Modeling Differences:
+
+- Problem 1: Focus on minimizing variable costs (manufacturing + shipping), applying carrier-level discounts
+
+- Problem 2: Adds holding costs and ordering costs, penalizes split shipments, encourages cost-efficient bulk orders
+
      
