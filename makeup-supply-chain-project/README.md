@@ -72,7 +72,7 @@ Our goal is to assign carriers to each SKU **to minimize total cost**, consideri
 We model this problem as a **Mixed-Integer Quadratic Program (MIQP)** using **Gurobi**, with the following key elements:
 
 - **Decision Variables**:  
-  `xA[i], xB[i], xC[i]` — Number of packages of SKU *i* shipped by Carriers A, B, C (integer)  
+  `xA[i], xB[i], xC[i]` -- Number of packages of SKU *i* shipped by Carriers A, B, C (integer)  
 
 - **Constraints**:  
   - **Fulfillment**: The sum of packages ordered across all carriers must cover demand.  
@@ -105,10 +105,33 @@ In our model, we randomly assign a holding cost percentage within this range to 
 - Additionally, if an order is split across multiple carriers, we add a flat split shipment penalty (ORDERING_COST_FOR_MORE_THAN_ONE_SHIPPING) per SKU.
   This is modeled via binary variables activated when more than one carrier is used for the same SKU.
 
-## Summary of Modeling Differences:
+## Optimization Model (Problem 2)
+We extend the MIQP formulation used in Problem 1 with additional decision variables and constraints to capture inventory holding costs, ordering costs, and carrier split penalties.
 
-- Problem 1: Focus on minimizing variable costs (manufacturing + shipping), applying carrier-level discounts
+- **Decision Variables**:  
+  - `xA[i], xB[i], xC[i]` — Number of packages of SKU *i* shipped by Carriers A, B, C (integer)  
+  - `usedA[i], usedB[i], usedC[i]` — Binary variables indicating if Carrier A, B, or C is used for SKU *i*  
+  - `carrierCount[i]` — Integer variable counting the number of carriers used for SKU *i*  
+  - `splitPenaltyActive[i]` — Binary variable that activates if SKU *i* is shipped with more than one carrier  
 
-- Problem 2: Adds holding costs and ordering costs, penalizes split shipments, encourages cost-efficient bulk orders
+- **Additional Constraints**:  
+  - **Carrier Usage Indicators**:  
+    If `xA[i] > 0` then `usedA[i] = 1` (similarly for B and C)  
+  - **Carrier Count Enforcement**:  
+    `carrierCount[i] = usedA[i] + usedB[i] + usedC[i]`  
+  - **Split Shipment Penalty Activation**:  
+    `splitPenaltyActive[i] = 1` if `carrierCount[i] ≥ 2`  
 
-     
+- **Objective Function**:  
+  Minimize:  
+  - Total Manufacturing Cost  
+    - Total Shipping Cost (with carrier discounts applied as in Problem 1)  
+    -  Total Inventory Holding Cost  
+    - Total Ordering Cost (flat per order per supplier)  
+    -  Total Split Shipment Penalty  
+
+- **Holding Cost Calculation**:  
+  Holding Cost per SKU = (Manufacturing Cost + Shipping Cost) × Holding Cost Percentage × Total Units Ordered  
+
+- **Ordering Cost**:  
+  Flat cost per order per supplier + Split shipment penalty if applicable  
