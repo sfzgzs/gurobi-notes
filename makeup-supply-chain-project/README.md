@@ -16,7 +16,7 @@ The primary key in the table provided is SKU (Stock Keeping Unit). For each prod
 | Customer Demographic | Target customer group, could be **female**, **male**, **non-binary** or **unknown** |
 | Stock levels | Current stock available (How is it different than availability?) |
 | Lead time | Time between placement of an order, until it's ready for delivery (in Days) |
-| Order Quantities | 	Past ordered quantities (??? In the current code, I have used this field as the number of products that get shipped together as a package. I have to update the code ) |
+| Order Quantities | The number of products that get shipped together as a package. |
 | Shipping Times | The time it takes for the item to be transported to the customer(in this scenario, the makeup store) after it's been produced and shipped | 
 | Shipping Carriers | a company that physically transports goods or freight from one location to another, either by land, sea, or air. Options here are **Carrier A**, **Carrier B**, and **Carrier C** |
 | Shipping Cost | The cost of moving one item of the product from the manufacturer to the makeup store |
@@ -85,11 +85,7 @@ We model this problem as a **Mixed-Integer Quadratic Program (MIQP)** using **Gu
   Minimize: Total Shipping Cost (with discounts) + Total Manufacturing Cost
 ---
 ## Problem 2 Statement
-Let us consider the case where the business has a new management team, and the new management does not want to use the order quantities estimated by the old team. Instead, they want to recalculate the solution to problem #1 based on their own estimations of the recalculated order quantities.
-
-This means the optimization model in problem #1 would work as long as we can recalculate order quantities. Instead of using the Economic Order Quantity (EOQ) to determine the order quantities, we can add some constraints to our optimization model.
-
-In order to do this, we have to have a few more parameters to work with:
+Let us consider a more realistic scenario where two more factors are considered in calculating the number of products ordered in total:
 1. Inventory Holding Cost (per unit per year)
    This typically reflects:
       - Storage cost,
