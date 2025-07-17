@@ -53,7 +53,7 @@ The primary key in the table provided is SKU (Stock Keeping Unit). For each prod
 - **Transportation modes** and **shipping times** mismatch. Some products shipped by **Air** have long lead times (e.g., 30 days) even though **Air** is usually used for fast delivery.
   - Fix for **Air** shipments: **Lead Time** $\leq$ 7 days and **sea shipments**: **Lead Time** $\geq$ 15 days.
 ---
-## Problem Statement
+## Problem 1 Statement
 In this dataset, we have one carrier(out of A, B, and C) selected for each product. 
 Now, let us consider a situation where **all carriers offer identical services** for each SKU (exact same routes, modes, and lead times), but with **different shipping costs** (randomized by ±0.05 of the base cost).  
 
@@ -83,4 +83,28 @@ We model this problem as a **Mixed-Integer Quadratic Program (MIQP)** using **Gu
 
 - **Objective**:  
   Minimize: Total Shipping Cost (with discounts) + Total Manufacturing Cost
+---
+## Problem 2 Statement
+Let us consider the case where the business has a new management team, and the new management does not want to use the order quantities estimated by the old team. Instead, they want to recalculate the solution to problem #1 based on their own estimations of the recalculated order quantities.
 
+This means the optimization model in problem #1 would work as long as we can recalculate order quantities. Instead of using the Economic Order Quantity (EOQ) to determine the order quantities, we can add some constraints to our optimization model.
+
+In order to do this, we have to have a few more parameters to work with:
+1. Inventory Holding Cost (per unit per year)
+   This typically reflects:
+      - Storage cost,
+      - Insurance, and
+      - Depreciation/Obsolescence
+    A practical rule of thumb is to consider 20% to 30% of the product ``acquisition''(manufacturing+shipping) cost per year. In order to model this, we just use a random number between 20% and 30% of the cost of the product.
+2. Ordering Cost (per order)
+   may include:
+     - Administrative costs (time spent by staff placing the order)
+     - Order processing fees (paperwork, invoicing, system use)
+     - Shipping/freight fees (flat fees, if applicable)
+     - Customs/brokerage fees (for international orders)
+     - Setup costs at the warehouse or store (handling incoming stock, inspection)
+   This could be a flat dollar amount per order (no matter how many items in the order). In our code, we consider it to be a flat amount randomly selected between $30-$50 for each **supplier**.
+
+## Problem 3 Statement
+Add a flat cost to OrderingCost when the supplier is asked to ship the order using more than one carrier.
+     
