@@ -37,7 +37,7 @@ The primary key in the table provided is SKU (Stock Keeping Unit). For each prod
     - This issue is fixed by limiting these numbers to two 2 decimal places.
 - The value of the `manufacturing cost` should normally not be less than the `price`.
   In fact, in most cases, the (selling) **price** should be more than `manufacturing cost`+`shipping cost` for the business to gain any profit at all.
-  It is also common sense that Shipping Cost should be $\leq$ 25% of Selling Price.
+  It is also common sense that Shipping Cost should be <= 25% of Selling Price.
     - This is fixed by recalculating the Price (in rows in the dataset that do not make sense) as
       `(Manufacturing Cost+Shipping Cost)×(1+Markup Percentage)`
       where the typical `markup percentage` for mass-market beauty products is a ratio between [1,3].
@@ -51,7 +51,7 @@ The primary key in the table provided is SKU (Stock Keeping Unit). For each prod
 - Some rows have `Pass` as `inspection result` with high `Defect Rate`s. Normally, if `Defect Rate > threshold`, the inspection would `fail`.
   - Fixed it to if `Defect Rate > 2%`, force Inspection Result to be `Fail`.
 - `Transportation modes` and `shipping times` mismatch. Some products shipped by `Air` have long lead times (e.g., 30 days) even though `Air` is usually used for fast delivery.
-  - Fix for `Air` shipments: `Lead Time $\leq$ 7 days` and `sea shipments`: `Lead Time $\geq$ 15 days`.
+  - Fix for `Air` shipments: `Lead Time <= 7 days` and `sea shipments`: `Lead Time >= 15 days`.
 ---
 ## Problem 1 Statement
 In this dataset, we have one carrier(out of A, B, and C) selected for each product. 
@@ -76,10 +76,10 @@ We model this problem as a **Mixed-Integer Quadratic Program (MIQP)** using **Gu
 
 - **Constraints**:  
   - **Fulfillment**: The sum of packages ordered across all carriers must cover demand.  
-    for each SKU: `total number of packages shipped to store $\geq$ (number of products sold - stock levels) / order quantities`
+    for each SKU: `total number of packages shipped to store >= (number of products sold - stock levels) / order quantities`
 
   - **Discount Activation**: Implemented via **indicator constraints** (using Gurobi's `addGenConstrIndicator`):  
-    e.g., *if total packages of Carrier A ≥ 100 then activate discount*  
+    e.g., *if total packages of Carrier A >= 100 then activate discount*  
 
 - **Objective**:  
   Minimize:  `Total Shipping Cost` (after applying discounts at the carrier level) + `Total Manufacturing Cost`
@@ -120,7 +120,7 @@ We extend the MIQP formulation used in Problem 1 with additional decision variab
   - **Carrier Count Enforcement**:  
     `carrierCount[i] = usedA[i] + usedB[i] + usedC[i]`  
   - **Split Shipment Penalty Activation**:  
-    `splitPenaltyActive[i] = 1` if `carrierCount[i] ≥ 2`  
+    `splitPenaltyActive[i] = 1` if `carrierCount[i] >= 2`  
 
 - **Objective Function**:  
   Minimize the following:
