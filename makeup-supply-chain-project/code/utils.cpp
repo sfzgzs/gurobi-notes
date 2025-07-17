@@ -8,32 +8,47 @@ void initializeCarrierShippingCosts(std::vector<SKU> &skuList)
 {
     for (auto &sku : skuList)
     {
-        bool randBool = getRandomInt(0, 1) == 0;
+        bool randBool = (getRandomInt(0, 1) == 0);
+        std::cout << randBool;
         if (sku.shippingCarrier == "Carrier A")
         {
             sku.carrierAShippingCost = sku.shippingCost;
-            sku.carrierBShippingCost = round2(sku.shippingCost + (randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost));
-            sku.carrierCShippingCost = round2(sku.shippingCost + (!randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost));
+            sku.carrierBShippingCost = round2(sku.shippingCost + (randBool ? -0.5 * sku.shippingCost : 0.5 * sku.shippingCost));
+            sku.carrierCShippingCost = round2(sku.shippingCost + (randBool ? 0.5 * sku.shippingCost : -0.5 * sku.shippingCost));
         }
         else if (sku.shippingCarrier == "Carrier B")
         {
             sku.carrierBShippingCost = sku.shippingCost;
-            sku.carrierAShippingCost = round2(sku.shippingCost + (randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost));
-            sku.carrierCShippingCost = round2(sku.shippingCost + (!randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost));
+            sku.carrierAShippingCost = round2(sku.shippingCost + (randBool ? -0.5 * sku.shippingCost : 0.5 * sku.shippingCost));
+            sku.carrierCShippingCost = round2(sku.shippingCost + (randBool ? 0.5 * sku.shippingCost : -0.5 * sku.shippingCost));
         }
         else if (sku.shippingCarrier == "Carrier C")
         {
             sku.carrierCShippingCost = sku.shippingCost;
-            sku.carrierAShippingCost = round2(sku.shippingCost + (randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost));
-            sku.carrierBShippingCost = round2(sku.shippingCost + (!randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost));
+            sku.carrierAShippingCost = round2(sku.shippingCost + (randBool ? -0.5 * sku.shippingCost : 0.5 * sku.shippingCost));
+            sku.carrierBShippingCost = round2(sku.shippingCost + (randBool ? 0.5 * sku.shippingCost : -0.5 * sku.shippingCost));
         }
         else
         {
             // Default behavior if carrier unknown
             sku.carrierAShippingCost = sku.shippingCost;
-            sku.carrierBShippingCost = sku.shippingCost + (randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost);
-            sku.carrierCShippingCost = sku.shippingCost + (!randBool ? -0.05 * sku.shippingCost : 0.05 * sku.shippingCost);
+            sku.carrierBShippingCost = sku.shippingCost + (randBool ? -0.5 * sku.shippingCost : 0.5 * sku.shippingCost);
+            sku.carrierCShippingCost = sku.shippingCost + (!randBool ? -0.5 * sku.shippingCost : 0.5 * sku.shippingCost);
         }
+    }
+}
+void initializeHoldingCostAndOrderingCost(std::vector<SKU> &skuList)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    std::uniform_real_distribution<> holdingCostDist(0.20, 0.30);  // 20% to 30%
+    std::uniform_real_distribution<> orderingCostDist(30.0, 50.0); // $30 to $50
+
+    for (auto &sku : skuList)
+    {
+        sku.holdingCostRatio = holdingCostDist(gen);
+        sku.orderingCost = orderingCostDist(gen);
     }
 }
 std::vector<SKU> readSkuList(std::ifstream &file, bool containsSupplierLeadTime)
@@ -94,6 +109,7 @@ std::vector<SKU> readSkuList(std::ifstream &file, bool containsSupplierLeadTime)
 
     file.close();
     initializeCarrierShippingCosts(res);
+    initializeHoldingCostAndOrderingCost(res);
     return res;
 }
 

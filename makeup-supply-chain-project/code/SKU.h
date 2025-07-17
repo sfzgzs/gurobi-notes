@@ -34,6 +34,13 @@ struct SKU
     double carrierBShippingCost;
     double carrierCShippingCost;
 
+    // Modification for order quantity estimation
+
+    // This help calculate the following: holdingCost = holdingCostRatio*(manufacturingCost+shippingCosts)
+    double holdingCostRatio = -1;
+
+    double orderingCost = -1; // orderingCost is calculated per order from manufacturer (and not per unit)
+
     std::string toString() const;
     std::string commaSeparatedToString() const;
 };

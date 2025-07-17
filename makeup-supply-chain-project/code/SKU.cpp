@@ -26,7 +26,10 @@ std::string SKU::toString() const
            "| inspection Results: " + inspectionResults +
            "| defect Rates: " + std::to_string(defectRates) +
            "| transportation Mode: " + transportationMode +
-           "| route: " + route;
+           "| route: " + route +
+           "| holdingCostRatio: " + std::to_string(holdingCostRatio) +
+           "| orderingCost: " + std::to_string(orderingCost);
+    ;
 }
 
 std::string SKU::commaSeparatedToString() const
@@ -52,5 +55,7 @@ std::string SKU::commaSeparatedToString() const
            "," + inspectionResults +
            "," + std::to_string(defectRates) +
            "," + transportationMode +
-           "," + route;
+           "," + route +
+           "," + std::to_string(holdingCostRatio) +
+           "," + std::to_string(orderingCost);
 }

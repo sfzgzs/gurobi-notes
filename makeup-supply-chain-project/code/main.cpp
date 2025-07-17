@@ -20,6 +20,7 @@ int main()
           std::ifstream file("cleaned_supply_chain_data.csv");
           std::vector<SKU> skuList = readSkuList(file, false);
           solveProblem1_CarrierAssignment(skuList);
+          solveProblem2_CarrierAssignment(skuList);
      }
      catch (GRBException e)
      {
