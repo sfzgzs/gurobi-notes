@@ -38,9 +38,6 @@ Our goal is to assign carriers to each SKU **to minimize total cost**, consideri
 - The **shipping cost** (with discounts applied when thresholds are met)  
 - The **manufacturing cost** of the products
   
-The number of packages shipped has a lower bound of 
-number of packages $\leq$ number of products sold / order quantities 
-
 ---
 ## Optimization Model  
 
@@ -51,9 +48,10 @@ We model this problem as a **Mixed-Integer Quadratic Program (MIQP)** using **Gu
 
 - **Constraints**:  
   - **Fulfillment**: The sum of packages ordered across all carriers must cover demand.  
-  - **Package Totals**: Aggregate shipped packages per carrier.  
+    for each SKU: total number of packages shipped to store $\geq$ (number of products sold - stock levels) / order quantities 
+
   - **Discount Activation**: Implemented via **indicator constraints** (using Gurobi's `addGenConstrIndicator`):  
-    e.g., *if total packages of Carrier A ≥ 2500 → activate discount*  
+    e.g., *if total packages of Carrier A ≥ 2500 → activate discount *  
 
 - **Objective**:  
   Minimize: Total Shipping Cost (with discounts) + Total Manufacturing Cost
